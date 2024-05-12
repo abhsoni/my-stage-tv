@@ -64,8 +64,8 @@ export default function HomePage() {
     <>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+          <h1 className="text-4xl font-extrabold tracking-tight text-white">
+          Sit back and <span className="text-[hsl(280,100%,70%)]">enjoy your movies</span> here.
           </h1>
           <div className="flex flex-row">
             <div className="flex flex-col items-start gap-4 mx-8">

@@ -110,7 +110,7 @@ export default function CreateData() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+          Create <span className="text-[hsl(280,100%,70%)]">Sample Data</span> here.
           </h1>
           <div className="flex flex-row">
             <div>
@@ -167,31 +167,24 @@ export default function CreateData() {
                         className="w-full rounded-full px-4 py-2 text-black"
                     />
                     <input
-                        type="text"
-                        placeholder="Genres"
-                        value={releaseDate.toISOString()}
-                        onChange={(e) => setReleaseDate(new Date())}
+                        type="date"
+                        placeholder="Release Date"
+                        value={releaseDate ? releaseDate.toISOString().split('T')[0] : ''}
+                        onChange={(e) => setReleaseDate(new Date(e.target.value))}
                         className="w-full rounded-full px-4 py-2 text-black"
                     />
                     <input
                         type="text"
-                        placeholder="ReleaseDate"
+                        placeholder="Director"
                         value={director}
                         onChange={(e) => setDirector(e.target.value)}
                         className="w-full rounded-full px-4 py-2 text-black"
                     />
                     <input
                         type="text"
-                        placeholder="Director"
-                        // value={actors}
-                        onChange={(e) => setActors(actorsList)}
-                        className="w-full rounded-full px-4 py-2 text-black"
-                    />
-                    <input
-                        type="text"
                         placeholder="Actors"
-                        value={genres}
-                        onChange={(e) => setGenres([])}
+                        value={actors.join(', ')} // Join the array elements into a comma-separated string for display
+                        onChange={(e) => setActors(e.target.value.split(',').map(actor => actor.trim()))} // Split the input value by comma and trim each actor
                         className="w-full rounded-full px-4 py-2 text-black"
                     />
                     <button
