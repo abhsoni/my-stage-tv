@@ -189,7 +189,7 @@ export const userRouter = createTRPCRouter({
       }
     }),
   
-    fetchMyList: publicProcedure
+  fetchMyList: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       try {

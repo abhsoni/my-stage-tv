@@ -34,7 +34,7 @@ export default function Home() {
             <Link
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href="/home-page"
-              target="_blank"
+              // target="_blank"
             >
               <h3 className="text-2xl font-bold">First Steps →</h3>
               <div className="text-lg">
@@ -44,7 +44,7 @@ export default function Home() {
             <Link
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href="/create-data"
-              target="_blank"
+              // target="_blank"
             >
               <h3 className="text-2xl font-bold">Documentation →</h3>
               <div className="text-lg">

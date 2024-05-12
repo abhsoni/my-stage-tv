@@ -1,35 +1,16 @@
-import Head from "next/head";
-import Link from "next/link";
 import { ChangeEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { api } from "~/utils/api";
-import { Genre } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export default function HomePage() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
-  const router = useRouter();
   const fetchMovies = api.user.fetchAllMovies.useQuery();
   const fetchTVShows = api.user.fetchAllTVShows.useQuery();
   const userIDTesting="663f8a5d7a1c5225792f114f";
   const fetchMyList = api.user.fetchMyList.useQuery({userId:userIDTesting});
   const [selectedMovies, setSelectedMovies] = useState<string[]>([]);
   const [selectedTVShows, setSelectedTVShows] = useState<string[]>([]);
-  const handleMovieSelection = (event: ChangeEvent<HTMLInputElement>, movieId: string) => {
-    if (event.target.checked) {
-      setSelectedMovies((prevSelectedMovies) => [...prevSelectedMovies, movieId]);
-    } else {
-      setSelectedMovies((prevSelectedMovies) => prevSelectedMovies.filter((id) => id !== movieId));
-    }
-  };
-  const handleTVShowSelection = (event: ChangeEvent<HTMLInputElement>, tvShowId: string) => {
-    if (event.target.checked) {
-      setSelectedTVShows((prevSelectedTVShows) => [...prevSelectedTVShows, tvShowId]);
-    } else {
-      setSelectedTVShows((prevSelectedTVShows) => prevSelectedTVShows.filter((id) => id !== tvShowId));
-    }
-  };
   const addToFavList = api.user.addToUserFavList.useMutation({
     onSuccess: async () => {
       console.log("success");
@@ -51,8 +32,6 @@ export default function HomePage() {
     try {
       // Call the API to remove the item from the list
       removeFromMyFavList.mutate({ userId, itemId, itemType });
-      
-      // Update the local state to reflect the removal
     } catch (error) {
       console.error("Error removing item from list:", error);
       // Handle the error, e.g., display an error message to the user
@@ -94,7 +73,7 @@ export default function HomePage() {
                     <input
                         type="checkbox"
                         id={`tvShow-${tvShow.id}`}
-                        checked={selectedTVShows.includes(tvShow.id)}
+                        // checked={selectedTVShows.includes(tvShow.id)}
                         onChange={(event) => checkHandler(event, tvShow.id,"TVShow")}
                     />
                     <label htmlFor={`tvShow-${tvShow.id}`} className="text-white">{tvShow.title}</label>

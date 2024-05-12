@@ -1,7 +1,4 @@
-import Head from "next/head";
-import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { api } from "~/utils/api";
 import { Genre } from "@prisma/client";
@@ -18,7 +15,6 @@ export default function CreateData() {
   const [actors, setActors] = useState<string[]>([]);
   const [releaseDate, setReleaseDate] = useState(new Date());
   const [genres,setGenres]=useState([]);
-  const router = useRouter();
   type episode = {
     episodeNumber: number
     seasonNumber: number
@@ -28,38 +24,21 @@ export default function CreateData() {
   }
   const createUser = api.user.createUser.useMutation({
     onSuccess: () => {
-    //   router.refresh();
       setUsername("");
-      
-    //   router.push('/verifyemail-page');
     },
   });
   const createMovie = api.user.createMovie.useMutation({
     onSuccess: () => {
-    //   router.refresh();
       setUsername("");
-      
-    //   router.push('/verifyemail-page');
     },
   });
   const createTVShow = api.user.createTVShow.useMutation({
     onSuccess: () => {
-    //   router.refresh();
       setUsername("");
-      
-    //   router.push('/verifyemail-page');
     },
   });
-  const addToMyList = api.user.addToUserFavList.useMutation({
-    onSuccess: () => {
-    //   router.refresh();
-      setUsername("");
-      
-    //   router.push('/verifyemail-page');
-    },
-  });
+
   async function submitHandler(username:string){
-    
     try{
         createUser.mutate({ username });
     }
@@ -103,7 +82,6 @@ export default function CreateData() {
     console.log(error);
     } 
   }
-  const actorsList:string[]=["Al Pacino"];
 
   return (
     <>

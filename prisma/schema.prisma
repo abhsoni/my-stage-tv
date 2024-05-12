@@ -42,7 +42,7 @@ type WatchHistory {
   watchedOn  DateTime
   rating     Int?
 }
-
+//This is default model, came with T3 Stack Template. 
 model Post {
     id        String      @id @default(auto()) @map("_id") @db.ObjectId
     name      String
@@ -88,9 +88,4 @@ type Episode {
   actors         String[]
 }
 
-// Define the LikedItem model
-type LikedItem {
-  movieId    String?
-  tvShowId   String?
-}
 
