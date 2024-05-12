@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+// Define the Genre enum
+enum Genre {
+  Action
+  Comedy
+  Drama
+  Fantasy
+  Horror
+  Romance
+  SciFi
+}
+
+// Define the User model
+model User {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  username      String
+  preferences   UserPreferences   // Include UserPreferences as an embedded type
+  watchHistory  WatchHistory[]    // Fix syntax to use array type
+
+  @@index([username])
+}
+
+// Define the UserPreferences model embedded within User
+type UserPreferences {
+  favoriteGenres   Genre[]
+  dislikedGenres   Genre[]
+}
+
+// Define the WatchHistory model as an embedded type within User
+type WatchHistory {
+  contentId  String  
+  watchedOn  DateTime
+  rating     Int?
+}
+
+model Post {
+    id        String      @id @default(auto()) @map("_id") @db.ObjectId
+    name      String
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+
+    @@index([name])
+}
+
+model UserFavList {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  itemType  String
+  itemId    String
+  @@unique([userId, itemType, itemId])
+}
+
+model Movie {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  genres       Genre[]
+  releaseDate  DateTime
+  director     String
+  actors       String[]
+}
+
+// Define the TVShow model
+model TVShow {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  genres       Genre[]
+  episodes     Episode[]
+}
+
+// Define the Episode model embedded within TVShow
+type Episode {
+  episodeNumber  Int
+  seasonNumber   Int
+  releaseDate    DateTime
+  director       String
+  actors         String[]
+}
+
+// Define the LikedItem model
+type LikedItem {
+  movieId    String?
+  tvShowId   String?
+}
+
