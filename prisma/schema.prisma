@@ -57,6 +57,10 @@ model UserFavList {
   userId    String
   itemType  String
   itemId    String
+  // Define indexes for userId, itemType, and itemId
+  @@index([userId])
+  @@index([itemType])
+  @@index([itemId])
   @@unique([userId, itemType, itemId])
 }
 
