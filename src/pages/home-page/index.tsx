@@ -2,13 +2,21 @@ import { ChangeEvent, useState } from "react";
 
 import { api } from "~/utils/api";
 import { TRPCError } from "@trpc/server";
+import { useRouter } from "next/navigation";
+import PageWithAuth from "~/hocs/authHoc";
+import ShowFavItemList from "../_components/showFavItemsList";
 
-export default function HomePage() {
+function HomePage() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const fetchMovies = api.user.fetchAllMovies.useQuery();
   const fetchTVShows = api.user.fetchAllTVShows.useQuery();
-  const userIDTesting="663f8a5d7a1c5225792f114f";
-  const fetchMyList = api.user.fetchMyList.useQuery({userId:userIDTesting});
+  const userId=sessionStorage.getItem("userId") || "";
+  const fetchMyList = api.user.fetchMyList.useMutation({
+    onSuccess: async ()=>{
+      console.log("Favourite Items list fetched.");
+    },
+  });
+  const router=useRouter();
   const [selectedMovies, setSelectedMovies] = useState<string[]>([]);
   const [selectedTVShows, setSelectedTVShows] = useState<string[]>([]);
   const addToFavList = api.user.addToUserFavList.useMutation({
@@ -21,12 +29,17 @@ export default function HomePage() {
       console.log("success");
     },
   });
-  const checkHandler = (e:ChangeEvent<HTMLInputElement>,itemId:string,itemType:string)=>{
+  const checkHandler = (itemId:string,itemType:string)=>{
     
     console.log(itemId);
-    if(userIDTesting){
-        addToFavList.mutate({userId:userIDTesting,itemId,itemType});
+    if(userId){
+        addToFavList.mutate({userId:userId,itemId,itemType});
     }
+  }
+  const logoutHandler = ()=>{
+    
+    sessionStorage.clear();
+    router.push("/login");
   }
   const removeFromMyList = async (userId:string,itemId:string,itemType:string) => {
     try {
@@ -52,12 +65,13 @@ export default function HomePage() {
                 {fetchMovies.data ? (
                 fetchMovies.data.map((movie) => (
                     <div key={movie.id} className="flex items-center gap-2">
-                    <input
+                    {/* <input
                         type="checkbox"
                         id={`movie-${movie.id}`}
                         // checked={selectedMovies.includes(movie.id)}
-                        onChange={(event) => checkHandler(event, movie.id,"Movie")}
-                    />
+                        onChange={(event) => checkHandler( movie.id,"Movie")}
+                    /> */}
+                    <button onClick={(event) => checkHandler( movie.id,"Movie")} className="text-white font-extrabold">+</button>
                     <label htmlFor={`movie-${movie.id}`} className="text-white">{movie.title}</label>
                     </div>
                 ))
@@ -70,12 +84,13 @@ export default function HomePage() {
                 {fetchTVShows.data ? (
                 fetchTVShows.data.map((tvShow) => (
                     <div key={tvShow.id} className="flex items-center gap-2">
-                    <input
+                    {/* <input
                         type="checkbox"
                         id={`tvShow-${tvShow.id}`}
                         // checked={selectedTVShows.includes(tvShow.id)}
-                        onChange={(event) => checkHandler(event, tvShow.id,"TVShow")}
-                    />
+                        onChange={(event) => checkHandler(tvShow.id,"TVShow")}
+                    /> */}
+                    <button onClick={(event) => checkHandler(tvShow.id,"TVShow")} className="text-white font-extrabold">+</button>
                     <label htmlFor={`tvShow-${tvShow.id}`} className="text-white">{tvShow.title}</label>
                     </div>
                 ))
@@ -83,37 +98,11 @@ export default function HomePage() {
                 <p className="text-white">Loading TV shows...</p>
                 )}
             </div>
-            <div className="flex flex-col items-start gap-4 mx-8">
-                <h2 className="text-3xl text-white">My Favourite Movie List</h2>
-                {fetchMyList.data ? (
-                fetchMyList.data.favMovieList.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                    <label htmlFor={`tvShow-${item.id}`} className="text-white">{item.title}</label>
-                    <div key={item.id} className="flex items-center text-white text-2xl gap-2">
-                        <button onClick={(e) => removeFromMyList(userIDTesting,item.id,"Movie")}>-</button>
-                    </div>
-                    </div>
-                ))
-                ) : (
-                <p className="text-white">Loading TV shows...</p>
-                )}
-            </div>
-            <div className="flex flex-col items-start gap-4 mx-8">
-                <h2 className="text-3xl text-white">My Favourite TVShow List</h2>
-                {fetchMyList.data ? (
-                fetchMyList.data.favTVShowList.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                    <label htmlFor={`tvShow-${item.id}`} className="text-white">{item.title}</label>
-                    <div key={item.id} className="flex items-center text-white text-2xl gap-2">
-                        <button onClick={(e) => removeFromMyList(userIDTesting,item.id,"TVShow")}>-</button>
-                    </div>
-                    </div>
-                ))
-                ) : (
-                <p className="text-white">Loading TV shows...</p>
-                )}
-            </div>
+            <ShowFavItemList/>
           </div>
+          <p className="text-2xl text-white">
+            Click here to <button onClick={logoutHandler} className="text-[hsl(280,100%,70%)]">Logout</button> . 
+          </p>
           <p className="text-2xl text-white">
             {hello.data ? hello.data.greeting : "Loading tRPC query..."}
           </p>
@@ -122,3 +111,4 @@ export default function HomePage() {
     </>
   );
 }
+export default PageWithAuth(HomePage);

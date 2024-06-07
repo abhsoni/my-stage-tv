@@ -2,6 +2,10 @@ import { z } from "zod";
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { Genre } from "@prisma/client";
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+import { error } from "console";
 
 export const userRouter = createTRPCRouter({
   helloFromAuth: publicProcedure
@@ -13,22 +17,44 @@ export const userRouter = createTRPCRouter({
     }),
 
   createUser: publicProcedure
-    .input(z.object({ username: z.string().min(1)}))
+    .input(z.object({ username: z.string().min(1),email:z.string().min(4),password:z.string().min(8)}))
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
     //   const cat:Category[]=[{id:60,categoryName:"Shoes- JORDAN",createdAt:new Date(),updatedAt:new Date()}];
     //   await new Promise((resolve) => setTimeout(resolve, 1000));
+    const password=input.password;
+    bcrypt.hash(password,12).then((hashedPassword)=>{
       return ctx.db.user.create({
         data: {
           username:input.username,
+          password:hashedPassword,
+          email:input.email,
           preferences:{
             favoriteGenres:[],
             dislikedGenres:[]
           },
+          watchHistory:[]
         },
       });
+    })
     }),
-    createMovie: publicProcedure
+  loginUser: publicProcedure.input(z.object({email:z.string().min(4),password:z.string().min(8)})).mutation(async ({ ctx,input }) => {
+    // const token = jwt.sign({ email: input.email, password: input.password }, "mysecret", { expiresIn: '1h' });
+    const user= await ctx.db.user.findFirst({where:{
+      email:input.email,
+    }});
+    if(!user){
+      throw new TRPCError({ code: 'UNAUTHORIZED',message:"User not found." });
+    }
+    const doMatch = await bcrypt.compare(input.password,user.password);
+    if(doMatch){
+      const token = jwt.sign({ email: input.email, password: input.password }, "mysecret", { expiresIn: '1h' });
+      return {userId:user.id,token:token};
+    }else{
+      throw new TRPCError({message:"Password didn't match. Please enter correct password.",code:"UNAUTHORIZED"})
+    }
+    }),
+  createMovie: publicProcedure
     .input(z.object({
       title: z.string().min(1),
       description: z.string().min(1),
@@ -135,6 +161,7 @@ export const userRouter = createTRPCRouter({
       const { userId, itemId, itemType } = input;
   
       // Check if the user exists
+      console.log(userId);
       const existingUser = await ctx.db.user.findUnique({
         where: { id: userId },
       });
@@ -191,7 +218,7 @@ export const userRouter = createTRPCRouter({
   
   fetchMyList: publicProcedure
     .input(z.object({ userId: z.string() }))
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
         const { userId } = input;
         const myList = await ctx.db.userFavList.findMany({

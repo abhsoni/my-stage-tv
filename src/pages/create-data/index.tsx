@@ -6,6 +6,8 @@ import { Genre } from "@prisma/client";
 export default function CreateData() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const [username,setUsername]=useState("");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
   const [userid,setUserid]=useState("");
   const [title,setTitle]=useState("");
   const [tvShowTitle,setTVShowTitle]=useState("");
@@ -38,9 +40,9 @@ export default function CreateData() {
     },
   });
 
-  async function submitHandler(username:string){
+  async function submitHandler(username:string,email:string,password:string){
     try{
-        createUser.mutate({ username });
+        createUser.mutate({ username,email,password });
     }
     catch(error){
     console.log(error);
@@ -96,22 +98,29 @@ export default function CreateData() {
                     onSubmit={async (e) => {
                         e.preventDefault();
                         console.log("sdc");
-                        await submitHandler(username); 
+                        await submitHandler(username,email,password); 
                     }}
                     className="flex flex-col gap-2 m-4"
                     >
                     <input
                         type="text"
-                        placeholder="UserName"
+                        placeholder="User Name"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         className="w-full rounded-full px-4 py-2 text-black"
                     />
                     <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full rounded-full px-4 py-2 text-black"
+                    />
+                    <input
                         type="text"
-                        placeholder="UserId"
-                        value={userid}
-                        onChange={(e) => setUserid(e.target.value)}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="w-full rounded-full px-4 py-2 text-black"
                     />
                     <button

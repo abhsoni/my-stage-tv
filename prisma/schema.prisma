@@ -24,10 +24,10 @@ enum Genre {
 model User {
   id            String           @id @default(auto()) @map("_id") @db.ObjectId
   username      String
+  email         String           @unique
+  password      String
   preferences   UserPreferences   // Include UserPreferences as an embedded type
   watchHistory  WatchHistory[]    // Fix syntax to use array type
-
-  @@index([username])
 }
 
 // Define the UserPreferences model embedded within User
@@ -48,8 +48,6 @@ model Post {
     name      String
     createdAt DateTime    @default(now())
     updatedAt DateTime    @updatedAt
-
-    @@index([name])
 }
 
 model UserFavList {
