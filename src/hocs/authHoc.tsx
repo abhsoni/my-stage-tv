@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
   const AuthenticatedComponent = () => {
       const router = useRouter();
-      let isAuthenticated:boolean=false;
+      let isAuthenticated=false;
       
       
       const [ isAuth, setIsAuth ] = useState(false)
@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
             isAuthenticated=true;
         }
 
-        const getUser = async () => {
+        const getUser = () => {
             if (!isAuthenticated) {
                 router.push('/login');
             } else {

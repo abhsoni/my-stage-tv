@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { useEffect, useState } from "react";
 
 export default function ShowFavItemList(){
-    const userId=sessionStorage.getItem("userId") || "";
+    const userId=sessionStorage.getItem("userId") ?? "";
     const [rerender,setRerender] = useState(false);
     useEffect(()=>{
         fetchMyList.mutate({userId})

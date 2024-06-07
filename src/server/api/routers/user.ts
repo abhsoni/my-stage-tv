@@ -23,20 +23,24 @@ export const userRouter = createTRPCRouter({
     //   const cat:Category[]=[{id:60,categoryName:"Shoes- JORDAN",createdAt:new Date(),updatedAt:new Date()}];
     //   await new Promise((resolve) => setTimeout(resolve, 1000));
     const password=input.password;
-    bcrypt.hash(password,12).then((hashedPassword)=>{
-      return ctx.db.user.create({
-        data: {
-          username:input.username,
-          password:hashedPassword,
-          email:input.email,
-          preferences:{
-            favoriteGenres:[],
-            dislikedGenres:[]
+    try{
+      bcrypt.hash(password,12).then((hashedPassword)=>{
+        return ctx.db.user.create({
+          data: {
+            username:input.username,
+            password:hashedPassword,
+            email:input.email,
+            preferences:{
+              favoriteGenres:[],
+              dislikedGenres:[]
+            },
+            watchHistory:[]
           },
-          watchHistory:[]
-        },
-      });
-    })
+        });
+      })
+    }catch(error){
+      throw new TRPCError({ code: 'UNAUTHORIZED',message:"Something went wrong!." });
+    }
     }),
   loginUser: publicProcedure.input(z.object({email:z.string().min(4),password:z.string().min(8)})).mutation(async ({ ctx,input }) => {
     // const token = jwt.sign({ email: input.email, password: input.password }, "mysecret", { expiresIn: '1h' });

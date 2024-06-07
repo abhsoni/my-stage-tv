@@ -10,7 +10,7 @@ function HomePage() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const fetchMovies = api.user.fetchAllMovies.useQuery();
   const fetchTVShows = api.user.fetchAllTVShows.useQuery();
-  const userId=sessionStorage.getItem("userId") || "";
+  const userId=sessionStorage.getItem("userId") ?? "";
   const fetchMyList = api.user.fetchMyList.useMutation({
     onSuccess: async ()=>{
       console.log("Favourite Items list fetched.");
