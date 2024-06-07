@@ -37,7 +37,7 @@ export const userRouter = createTRPCRouter({
             watchHistory:[]
           },
         });
-      })
+      }).catch((err)=>{console.log("Somwthing is not alright!")})
     }catch(error){
       throw new TRPCError({ code: 'UNAUTHORIZED',message:"Something went wrong!." });
     }
