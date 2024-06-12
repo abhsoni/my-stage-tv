@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 
  const PageWithAuth = (Component:NextPage) => {
-  return ()=>{
+  const AuthComponent= ()=>{
     const router = useRouter();
     useEffect(()=>{
       if(!sessionStorage.getItem("token") || sessionStorage.getItem("token")==""){
@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
     },[]);
     return <Component />
   }
+  return AuthComponent;
 
   // const AuthenticatedComponent = () => {
   //     const router = useRouter();
