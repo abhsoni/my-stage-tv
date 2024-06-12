@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
   const AuthComponent= ()=>{
     const router = useRouter();
     useEffect(()=>{
-      if(!sessionStorage.getItem("token") || sessionStorage.getItem("token")==""){
-        router.push('/login');
+      if(!sessionStorage.getItem("token") ?? sessionStorage.getItem("token")==""){
+        router.push('/login').catch(err => {
+          console.error('Failed to navigate to login:', err);
+        });
       }
     },[]);
     return <Component />
