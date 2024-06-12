@@ -19,15 +19,6 @@ import { useEffect, useState } from "react";
         }else{
             router.push('/login');
         }
-
-        // const getUser = () => {
-        //     if (!isAuthenticated) {
-        //         router.push('/login');
-        //     } else {
-        //         setIsAuth(true)
-        //     }
-        // };
-        // getUser();
       }, [isAuthenticated, router]);
 
       return !!isAuth ? <Component /> : null; // Render whatever you want while the authentication occurs
