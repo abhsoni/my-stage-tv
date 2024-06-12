@@ -3,12 +3,12 @@ import { api } from "~/utils/api";
 import { TRPCError } from "@trpc/server";
 import { useEffect, useState } from "react";
 
-export default function ShowFavItemList(){
-    const userId=sessionStorage.getItem("userId") ?? "";
-    const [rerender,setRerender] = useState(false);
+export default function ShowFavItemList(props:any){
+    // const [userId, setUserId] =useState("");
     useEffect(()=>{
-        fetchMyList.mutate({userId})
-    },[rerender]);
+        // setUserId(props.userId);
+        fetchMyList.mutate({userId:props.userId});
+    },[]);
     const fetchMyList = api.user.fetchMyList.useMutation({
         onSuccess: async ()=>{
             console.log("Favourite Items list fetched.");
@@ -17,7 +17,6 @@ export default function ShowFavItemList(){
     const removeFromMyFavList = api.user.removeFromUserFavList.useMutation({
         onSuccess: async () => {
             console.log("success");
-            setRerender(!rerender);
         },
     });
     const removeFromMyList = async (userId:string,itemId:string,itemType:string) => {
@@ -39,7 +38,7 @@ export default function ShowFavItemList(){
                 <div key={item.id} className="flex items-center gap-2">
                 <label htmlFor={`tvShow-${item.id}`} className="text-white">{item.title}</label>
                 <div key={item.id} className="flex items-center text-[#ef4444] text-2xl gap-2">
-                    <button onClick={(e) => removeFromMyList(userId,item.id,"Movie")}>-</button>
+                    <button onClick={(e) => removeFromMyList(props.userId,item.id,"Movie")}>-</button>
                 </div>
                 </div>
             ))
@@ -54,7 +53,7 @@ export default function ShowFavItemList(){
                 <div key={item.id} className="flex items-center gap-2">
                 <label htmlFor={`tvShow-${item.id}`} className="text-white">{item.title}</label>
                 <div key={item.id} className="flex items-center text-[#ef4444] text-2xl gap-2">
-                    <button onClick={(e) => removeFromMyList(userId,item.id,"TVShow")}>-</button>
+                    <button onClick={(e) => removeFromMyList(props.userId,item.id,"TVShow")}>-</button>
                 </div>
                 </div>
             ))

@@ -1,37 +1,44 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState, useRef } from "react";
 
 import { api } from "~/utils/api";
 import { TRPCError } from "@trpc/server";
 import { useRouter } from "next/navigation";
 import PageWithAuth from "~/hocs/authHoc";
-import ShowFavItemList from "../_components/showFavItemsList";
 
 function HomePage() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const fetchMovies = api.user.fetchAllMovies.useQuery();
   const fetchTVShows = api.user.fetchAllTVShows.useQuery();
-  const userId=sessionStorage.getItem("userId") ?? "";
+  const router=useRouter();
+
+  const [userId, setUserId] =useState("");
+  // let userId:string;
+  useEffect(()=>{
+    // userId=sessionStorage.getItem("userId") ?? "";
+    setUserId(sessionStorage.getItem("userId") ?? "");
+    fetchMyList.mutate({userId:sessionStorage.getItem("userId") ?? ""});
+  },[]);
   const fetchMyList = api.user.fetchMyList.useMutation({
     onSuccess: async ()=>{
-      console.log("Favourite Items list fetched.");
+        console.log("Favourite Items list fetched.");
     },
   });
-  const router=useRouter();
-  const [selectedMovies, setSelectedMovies] = useState<string[]>([]);
-  const [selectedTVShows, setSelectedTVShows] = useState<string[]>([]);
   const addToFavList = api.user.addToUserFavList.useMutation({
     onSuccess: async () => {
       console.log("success");
+      router.refresh();
     },
   });
   const removeFromMyFavList = api.user.removeFromUserFavList.useMutation({
     onSuccess: async () => {
       console.log("success");
+      router.refresh();
     },
   });
   const checkHandler = (itemId:string,itemType:string)=>{
     
     console.log(itemId);
+    console.log(userId);
     if(userId){
         addToFavList.mutate({userId:userId,itemId,itemType});
     }
@@ -98,7 +105,37 @@ function HomePage() {
                 <p className="text-white">Loading TV shows...</p>
                 )}
             </div>
-            <ShowFavItemList/>
+            {/* <ShowFavItemList userId={userId}/> */}
+            <div className="flex flex-col items-start gap-4 mx-8">
+                <h2 className="text-3xl text-white">My Favourite Movie List</h2>
+                {fetchMyList.data ? (
+                fetchMyList.data.favMovieList.map((item) => (
+                    <div key={item.id} className="flex items-center gap-2">
+                    <label htmlFor={`tvShow-${item.id}`} className="text-white">{item.title}</label>
+                    <div key={item.id} className="flex items-center text-[#ef4444] text-2xl gap-2">
+                        <button onClick={(e) => removeFromMyList(userId,item.id,"Movie")}>-</button>
+                    </div>
+                    </div>
+                ))
+                ) : (
+                <p className="text-white">Loading Movies...</p>
+                )}
+            </div>
+            <div className="flex flex-col items-start gap-4 mx-8">
+                <h2 className="text-3xl text-white">My Favourite TVShow List</h2>
+                {fetchMyList.data ? (
+                fetchMyList.data.favTVShowList.map((item) => (
+                    <div key={item.id} className="flex items-center gap-2">
+                    <label htmlFor={`tvShow-${item.id}`} className="text-white">{item.title}</label>
+                    <div key={item.id} className="flex items-center text-[#ef4444] text-2xl gap-2">
+                        <button onClick={(e) => removeFromMyList(userId,item.id,"TVShow")}>-</button>
+                    </div>
+                    </div>
+                ))
+                ) : (
+                <p className="text-white">Loading TV shows...</p>
+                )}
+            </div>
           </div>
           <p className="text-2xl text-white">
             Click here to <button onClick={logoutHandler} className="text-[hsl(280,100%,70%)]">Logout</button> . 
